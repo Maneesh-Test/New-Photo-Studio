@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useImageEditor, AdjustmentSettings, FilterType, FILTERS } from '../hooks/useImageEditor';
-import { Sliders, Wand2, Image as ImageIcon, Download, Share2, Undo, Redo, X, Settings } from 'lucide-react';
+import { Sliders, Wand2, Image as ImageIcon, Download, Share2, Undo, Redo, X, Settings, ArrowLeft } from 'lucide-react';
 import { AdjustmentsPanel } from './Panels/AdjustmentsPanel';
 import { FiltersPanel } from './Panels/FiltersPanel';
 import { AIPanel } from './Panels/AIPanel';
@@ -19,6 +20,7 @@ export const MobileEditor: React.FC = () => {
         downloadImage
     } = useImageEditor();
 
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<ActiveTab>(null);
     const [showSettings, setShowSettings] = useState(false);
     const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
@@ -107,10 +109,11 @@ export const MobileEditor: React.FC = () => {
             {/* Header */}
             <div className="h-16 px-4 flex items-center justify-between border-b border-border bg-surface/50 backdrop-blur-md z-10">
                 <button
-                    onClick={() => window.location.reload()}
-                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                    onClick={() => navigate('/')}
+                    className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center gap-2"
                 >
-                    <X size={24} />
+                    <ArrowLeft size={24} />
+                    <span className="text-sm font-medium">Back</span>
                 </button>
 
                 <div className="flex gap-2">
