@@ -13,8 +13,6 @@ type Props = {
 export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [status, setStatus] = useState('');
-    const [showPromptDialog, setShowPromptDialog] = useState(false);
-    const [genFillPrompt, setGenFillPrompt] = useState('');
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     // Use user provided key or fallback to env var
@@ -207,47 +205,6 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }
         }
     };
 
-    // Generative Fill using Gemini
-    const handleGenerativeFill = () => {
-        setShowPromptDialog(true);
-    };
-
-    const executeGenerativeFill = async () => {
-        if (!apiKey) {
-            alert('Please add your Gemini API Key in Settings');
-            return;
-        }
-
-        if (!genFillPrompt.trim()) {
-            alert('Please enter a prompt');
-            return;
-        }
-
-        setShowPromptDialog(false);
-        setIsProcessing(true);
-        setStatus('Generating with AI...');
-
-        try {
-            // ... (Gemini API call - keeping existing logic but handling response)
-            // Since we can't easily get image back from this specific endpoint configuration in this environment without a proxy or specific model setup that returns bytes,
-            // we will keep the existing logic but note that it might need a real backend.
-            // For now, let's assume the previous implementation was "working" in terms of API call structure.
-            // But we need to handle the result.
-
-            // Placeholder for actual image generation response handling
-            // In a real app, we'd parse `data` to get the image.
-            // For this fix, we'll focus on the UI flow.
-
-            setStatus('');
-            setGenFillPrompt('');
-            alert('Generative fill request sent! (Note: Image generation requires specific model response handling)');
-        } catch (error) {
-            alert('Generative fill failed: ' + (error as Error).message);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
     if (previewUrl) {
         return (
             <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
@@ -319,39 +276,6 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }
                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400">
                     <p className="font-bold mb-1">API Key Missing</p>
                     <p className="opacity-80">Add your Gemini API key in settings to unlock AI features.</p>
-                </div>
-            )}
-
-            {/* Generative Fill Prompt Dialog */}
-            {showPromptDialog && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[70] p-4 animate-in fade-in duration-200">
-                    <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl ring-1 ring-white/10">
-                        <h3 className="text-lg font-bold mb-2">Generative Fill</h3>
-                        <p className="text-sm text-gray-400 mb-4">
-                            Describe what you want to add or remove from the image
-                        </p>
-                        <textarea
-                            value={genFillPrompt}
-                            onChange={(e) => setGenFillPrompt(e.target.value)}
-                            placeholder="e.g., Remove the person in the background, Add a sunset sky, etc."
-                            className="w-full bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm mb-6 resize-none h-32 focus:border-accent-500 focus:ring-1 focus:ring-accent-500 outline-none transition-all"
-                            autoFocus
-                        />
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setShowPromptDialog(false)}
-                                className="flex-1 px-4 py-3 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-colors font-medium"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={executeGenerativeFill}
-                                className="flex-1 px-4 py-3 bg-white text-black rounded-xl hover:bg-gray-200 transition-colors font-bold"
-                            >
-                                Generate
-                            </button>
-                        </div>
-                    </div>
                 </div>
             )}
         </div>
