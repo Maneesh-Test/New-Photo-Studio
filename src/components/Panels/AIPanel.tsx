@@ -47,7 +47,7 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }
         setPreviewUrl(url);
         setStatus('');
         setIsProcessing(false); // Stop processing to show preview
-        onClose?.(); // Close mobile panel to show preview
+        // Don't close panel - keep it open to show preview
     };
 
     const applyChanges = () => {
@@ -57,6 +57,7 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }
                 onApply(img);
                 setPreviewUrl(null);
                 URL.revokeObjectURL(previewUrl);
+                onClose?.(); // Close panel after applying
             };
             img.src = previewUrl;
         }
@@ -66,6 +67,7 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }
         if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
             setPreviewUrl(null);
+            onClose?.(); // Close panel after discarding
         }
     };
 
