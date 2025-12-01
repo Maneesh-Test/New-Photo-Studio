@@ -212,55 +212,64 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey }) => {
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-                <AIButton
+            <div className="space-y-3">
+                <AIActionCard
                     icon={<Sparkles size={20} />}
                     label="Magic Enhance"
-                    description="Auto-adjust lighting"
+                    description="Auto-adjust lighting and color balance"
                     onClick={handleMagicEnhance}
                     disabled={isProcessing}
+                    color="text-yellow-400"
+                    bgColor="bg-yellow-400/10"
                 />
-                <AIButton
+                <AIActionCard
                     icon={<Eraser size={20} />}
-                    label="Remove BG"
-                    description="Transparent PNG"
+                    label="Remove Background"
+                    description="Create a transparent PNG instantly"
                     onClick={handleRemoveBG}
                     disabled={isProcessing}
+                    color="text-blue-400"
+                    bgColor="bg-blue-400/10"
                 />
-                <AIButton
+                <AIActionCard
                     icon={<ImageIcon size={20} />}
-                    label="White BG"
-                    description="Studio Look JPG"
+                    label="White Background"
+                    description="Professional studio look (JPG)"
                     onClick={handleWhiteBG}
                     disabled={isProcessing}
+                    color="text-purple-400"
+                    bgColor="bg-purple-400/10"
                 />
-                <AIButton
+                <AIActionCard
                     icon={<Wand2 size={20} />}
                     label="Generative Fill"
-                    description="Add/Remove objects"
+                    description="Add or remove objects with text"
                     onClick={handleGenerativeFill}
                     disabled={isProcessing}
+                    color="text-pink-400"
+                    bgColor="bg-pink-400/10"
                 />
             </div>
 
             {isProcessing && (
-                <div className="flex items-center justify-center gap-3 p-4 bg-surfaceHighlight rounded-xl animate-pulse">
+                <div className="flex items-center gap-3 p-4 bg-zinc-800/50 border border-white/10 rounded-xl animate-pulse">
                     <Loader2 size={20} className="animate-spin text-accent-500" />
-                    <span className="text-sm text-gray-300">{status}</span>
+                    <span className="text-sm font-medium text-gray-300">{status}</span>
                 </div>
             )}
 
             {!apiKey && (
-                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-400 text-center">
-                    Gemini API Key missing. Some AI features disabled.
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400">
+                    <p className="font-bold mb-1">API Key Missing</p>
+                    <p className="opacity-80">Add your Gemini API key in settings to unlock AI features.</p>
                 </div>
             )}
 
             {/* Generative Fill Prompt Dialog */}
             {showPromptDialog && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full">
-                        <h3 className="text-lg font-semibold mb-4">Generative Fill</h3>
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[70] p-4 animate-in fade-in duration-200">
+                    <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl ring-1 ring-white/10">
+                        <h3 className="text-lg font-bold mb-2">Generative Fill</h3>
                         <p className="text-sm text-gray-400 mb-4">
                             Describe what you want to add or remove from the image
                         </p>
@@ -268,19 +277,19 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey }) => {
                             value={genFillPrompt}
                             onChange={(e) => setGenFillPrompt(e.target.value)}
                             placeholder="e.g., Remove the person in the background, Add a sunset sky, etc."
-                            className="w-full bg-surfaceHighlight border border-border rounded-lg p-3 text-white text-sm mb-4 resize-none h-24"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm mb-6 resize-none h-32 focus:border-accent-500 focus:ring-1 focus:ring-accent-500 outline-none transition-all"
                             autoFocus
                         />
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowPromptDialog(false)}
-                                className="flex-1 px-4 py-2 bg-surfaceHighlight border border-border rounded-lg hover:bg-surface transition-colors"
+                                className="flex-1 px-4 py-3 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-colors font-medium"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={executeGenerativeFill}
-                                className="flex-1 px-4 py-2 bg-accent-600 hover:bg-accent-500 rounded-lg transition-colors"
+                                className="flex-1 px-4 py-3 bg-white text-black rounded-xl hover:bg-gray-200 transition-colors font-bold"
                             >
                                 Generate
                             </button>
@@ -292,22 +301,26 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey }) => {
     );
 };
 
-const AIButton: React.FC<{
+const AIActionCard: React.FC<{
     icon: React.ReactNode;
     label: string;
     description: string;
     onClick: () => void;
     disabled?: boolean;
-}> = ({ icon, label, description, onClick, disabled }) => (
+    color?: string;
+    bgColor?: string;
+}> = ({ icon, label, description, onClick, disabled, color = "text-accent-500", bgColor = "bg-accent-500/10" }) => (
     <button
         onClick={onClick}
         disabled={disabled}
-        className="flex flex-col items-start p-3 bg-surfaceHighlight hover:bg-surface border border-border rounded-xl transition-all hover:border-accent-500/50 group disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center gap-4 p-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl transition-all hover:border-white/10 hover:translate-x-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 group text-left"
     >
-        <div className="p-2 bg-surface rounded-lg text-accent-500 mb-2 group-hover:scale-110 transition-transform">
+        <div className={`p-3 rounded-lg ${bgColor} ${color} group-hover:scale-110 transition-transform`}>
             {icon}
         </div>
-        <span className="font-semibold text-sm mb-1">{label}</span>
-        <span className="text-[10px] text-gray-400 text-left leading-tight">{description}</span>
+        <div>
+            <div className="font-bold text-sm text-gray-200 group-hover:text-white transition-colors">{label}</div>
+            <div className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">{description}</div>
+        </div>
     </button>
 );

@@ -105,67 +105,128 @@ export const MobileEditor: React.FC = () => {
     }
 
     return (
-        <div className="h-screen w-full flex flex-col bg-background text-white overflow-hidden">
+        <div className="h-screen w-full flex flex-col bg-zinc-950 text-white overflow-hidden font-sans selection:bg-accent-500/30">
             {/* Header */}
-            <div className="h-16 px-4 flex items-center justify-between border-b border-border bg-surface/50 backdrop-blur-md z-10">
-                <button
-                    onClick={() => navigate('/')}
-                    className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center gap-2"
-                >
-                    <ArrowLeft size={24} />
-                    <span className="text-sm font-medium">Back</span>
-                </button>
+            <header className="h-16 px-6 flex items-center justify-between border-b border-white/5 bg-zinc-900/50 backdrop-blur-xl z-50">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                        title="Back to Home"
+                    >
+                        <ArrowLeft size={20} />
+                    </button>
+                    <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>
+                    <span className="font-medium hidden md:block text-gray-300">Untitled Project</span>
+                </div>
 
-                <div className="flex gap-2">
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-zinc-800/50 rounded-full p-1 border border-white/5 mr-4">
+                        <button className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors" title="Undo">
+                            <Undo size={18} />
+                        </button>
+                        <button className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors" title="Redo">
+                            <Redo size={18} />
+                        </button>
+                    </div>
+
                     <button
                         onClick={() => setShowSettings(true)}
-                        className="p-2 hover:bg-white/10 rounded-full text-gray-400"
+                        className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors"
+                        title="Settings"
                     >
                         <Settings size={20} />
                     </button>
-                    <button className="p-2 hover:bg-white/10 rounded-full text-gray-400">
-                        <Undo size={20} />
-                    </button>
-                    <button className="p-2 hover:bg-white/10 rounded-full text-gray-400">
-                        <Redo size={20} />
-                    </button>
+
                     <button
                         onClick={downloadImage}
-                        className="p-2 bg-accent-600 hover:bg-accent-500 rounded-full text-white shadow-lg shadow-accent-500/20 transition-all"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors"
                     >
-                        <Download size={20} />
+                        <Download size={18} />
+                        <span className="hidden md:inline">Export</span>
                     </button>
                 </div>
-            </div>
+            </header>
 
-            {/* Main Canvas Area */}
-            <div className="flex-1 relative flex items-center justify-center p-4 checkerboard overflow-hidden">
-                <canvas
-                    ref={canvasRef}
-                    className="max-w-full max-h-full object-contain shadow-2xl"
-                    style={{ maxHeight: 'calc(100vh - 200px)' }}
-                />
-            </div>
+            <div className="flex-1 flex overflow-hidden">
+                {/* Main Canvas Area */}
+                <div className="flex-1 relative flex items-center justify-center p-8 bg-zinc-950/50 checkerboard overflow-hidden">
+                    <canvas
+                        ref={canvasRef}
+                        className="max-w-full max-h-full object-contain shadow-2xl ring-1 ring-white/10 rounded-sm"
+                        style={{ maxHeight: 'calc(100vh - 140px)' }}
+                    />
 
-            {/* Bottom Toolbar Area */}
-            <div className="bg-surface border-t border-border z-20">
-                {/* Active Tool Panel */}
-                {activeTab && (
-                    <div className="p-4 border-b border-border bg-surfaceHighlight/50 backdrop-blur-sm animate-in slide-in-from-bottom-10 fade-in duration-200">
-                        {activeTab === 'adjust' && (
-                            <AdjustmentsPanel adjustments={adjustments} onUpdate={updateAdjustment} />
-                        )}
-                        {activeTab === 'filters' && (
-                            <FiltersPanel activeFilter={activeFilter} onSelect={applyFilter} />
+                    {/* Floating Zoom Controls (Visual Only for now) */}
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-2 bg-zinc-900/90 backdrop-blur-md border border-white/10 rounded-full shadow-xl text-sm font-medium text-gray-300">
+                        <button className="hover:text-white">-</button>
+                        <span>100%</span>
+                        <button className="hover:text-white">+</button>
+                    </div>
+                </div>
+
+                {/* Desktop Sidebar */}
+                <aside className="hidden md:flex w-80 flex-col border-l border-white/5 bg-zinc-900">
+                    {/* Sidebar Tabs */}
+                    <div className="flex border-b border-white/5">
+                        <SidebarTab
+                            icon={<Sliders size={18} />}
+                            label="Adjust"
+                            isActive={activeTab === 'adjust' || activeTab === null}
+                            onClick={() => setActiveTab('adjust')}
+                        />
+                        <SidebarTab
+                            icon={<Wand2 size={18} />}
+                            label="AI Tools"
+                            isActive={activeTab === 'ai'}
+                            onClick={() => setActiveTab('ai')}
+                        />
+                        <SidebarTab
+                            icon={<ImageIcon size={18} />}
+                            label="Filters"
+                            isActive={activeTab === 'filters'}
+                            onClick={() => setActiveTab('filters')}
+                        />
+                    </div>
+
+                    {/* Sidebar Content */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+                        {(activeTab === 'adjust' || activeTab === null) && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">Light & Color</h3>
+                                <AdjustmentsPanel adjustments={adjustments} onUpdate={updateAdjustment} />
+                            </div>
                         )}
                         {activeTab === 'ai' && (
-                            <AIPanel image={image} userApiKey={apiKey} />
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">Generative AI</h3>
+                                <AIPanel image={image} userApiKey={apiKey} />
+                            </div>
                         )}
+                        {activeTab === 'filters' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">Presets</h3>
+                                <FiltersPanel activeFilter={activeFilter} onSelect={applyFilter} />
+                            </div>
+                        )}
+                    </div>
+                </aside>
+            </div>
+
+            {/* Mobile Bottom Bar */}
+            <div className="md:hidden bg-zinc-900 border-t border-white/5 pb-safe">
+                {/* Active Tool Panel (Mobile) */}
+                {activeTab && (
+                    <div className="p-4 border-b border-white/5 bg-zinc-900/95 backdrop-blur-xl animate-in slide-in-from-bottom-full duration-300 absolute bottom-full left-0 right-0 max-h-[50vh] overflow-y-auto rounded-t-2xl shadow-2xl ring-1 ring-white/10">
+                        <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
+                        {activeTab === 'adjust' && <AdjustmentsPanel adjustments={adjustments} onUpdate={updateAdjustment} />}
+                        {activeTab === 'filters' && <FiltersPanel activeFilter={activeFilter} onSelect={applyFilter} />}
+                        {activeTab === 'ai' && <AIPanel image={image} userApiKey={apiKey} />}
                     </div>
                 )}
 
-                {/* Navigation Tabs */}
-                <div className="flex items-center justify-around p-2 pb-safe">
+                {/* Mobile Navigation Tabs */}
+                <div className="flex items-center justify-around p-2">
                     <TabButton
                         icon={<Sliders size={24} />}
                         label="Adjust"
@@ -173,52 +234,62 @@ export const MobileEditor: React.FC = () => {
                         onClick={() => setActiveTab(activeTab === 'adjust' ? null : 'adjust')}
                     />
                     <TabButton
-                        icon={<ImageIcon size={24} />}
-                        label="Filters"
-                        isActive={activeTab === 'filters'}
-                        onClick={() => setActiveTab(activeTab === 'filters' ? null : 'filters')}
-                    />
-                    <TabButton
                         icon={<Wand2 size={24} />}
                         label="AI Tools"
                         isActive={activeTab === 'ai'}
                         onClick={() => setActiveTab(activeTab === 'ai' ? null : 'ai')}
+                    />
+                    <TabButton
+                        icon={<ImageIcon size={24} />}
+                        label="Filters"
+                        isActive={activeTab === 'filters'}
+                        onClick={() => setActiveTab(activeTab === 'filters' ? null : 'filters')}
                     />
                 </div>
             </div>
 
             {/* Settings Modal */}
             {showSettings && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full">
-                        <h3 className="text-lg font-semibold mb-4">Settings</h3>
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
+                    <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl ring-1 ring-white/10">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-bold">Settings</h3>
+                            <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white">
+                                <X size={20} />
+                            </button>
+                        </div>
 
-                        <div className="mb-6">
-                            <label className="block text-sm text-gray-400 mb-2">Gemini API Key</label>
-                            <input
-                                type="password"
-                                value={apiKey}
-                                onChange={(e) => setApiKey(e.target.value)}
-                                placeholder="AIza..."
-                                className="w-full bg-surfaceHighlight border border-border rounded-lg p-3 text-white text-sm focus:border-accent-500 outline-none transition-colors"
-                            />
-                            <p className="text-xs text-gray-500 mt-2">
-                                Required for AI features. Get one at <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-accent-500 hover:underline">Google AI Studio</a>.
+                        <div className="mb-8">
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Gemini API Key</label>
+                            <div className="relative">
+                                <input
+                                    type="password"
+                                    value={apiKey}
+                                    onChange={(e) => setApiKey(e.target.value)}
+                                    placeholder="AIza..."
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl p-3 pl-4 text-white text-sm focus:border-accent-500 focus:ring-1 focus:ring-accent-500 outline-none transition-all"
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+                                Required for AI features like Magic Enhance and Generative Fill.
+                                <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-accent-400 hover:text-accent-300 hover:underline ml-1">
+                                    Get a free key from Google
+                                </a>.
                             </p>
                         </div>
 
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowSettings(false)}
-                                className="flex-1 px-4 py-2 bg-surfaceHighlight border border-border rounded-lg hover:bg-surface transition-colors"
+                                className="flex-1 px-4 py-3 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-colors font-medium"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={saveApiKey}
-                                className="flex-1 px-4 py-2 bg-accent-600 hover:bg-accent-500 rounded-lg transition-colors font-medium"
+                                className="flex-1 px-4 py-3 bg-white text-black rounded-xl hover:bg-gray-200 transition-colors font-bold"
                             >
-                                Save Key
+                                Save Changes
                             </button>
                         </div>
                     </div>
@@ -228,6 +299,24 @@ export const MobileEditor: React.FC = () => {
     );
 };
 
+const SidebarTab: React.FC<{
+    icon: React.ReactNode;
+    label: string;
+    isActive: boolean;
+    onClick: () => void;
+}> = ({ icon, label, isActive, onClick }) => (
+    <button
+        onClick={onClick}
+        className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-medium transition-all border-b-2 ${isActive
+                ? 'text-white border-white bg-white/5'
+                : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-white/5'
+            }`}
+    >
+        {icon}
+        <span>{label}</span>
+    </button>
+);
+
 const TabButton: React.FC<{
     icon: React.ReactNode;
     label: string;
@@ -236,12 +325,14 @@ const TabButton: React.FC<{
 }> = ({ icon, label, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all w-20 ${isActive
-            ? 'text-accent-500 bg-accent-500/10'
-            : 'text-gray-400 hover:text-white hover:bg-white/5'
+        className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all w-20 ${isActive
+            ? 'text-white'
+            : 'text-gray-500'
             }`}
     >
-        {icon}
-        <span className="text-xs font-medium">{label}</span>
+        <div className={`p-2 rounded-full transition-all ${isActive ? 'bg-white text-black' : 'bg-transparent'}`}>
+            {icon}
+        </div>
+        <span className="text-[10px] font-medium">{label}</span>
     </button>
 );
