@@ -118,9 +118,19 @@ export function useImageEditor() {
         link.click();
     }, []);
 
+    const updateImage = useCallback((newImage: HTMLImageElement) => {
+        setImage(newImage);
+        setAdjustments(DEFAULT_ADJUSTMENTS);
+        setActiveFilter('Original');
+        // Add to history
+        setHistory(prev => [...prev, DEFAULT_ADJUSTMENTS]);
+        setHistoryIndex(prev => prev + 1);
+    }, []);
+
     return {
         image,
         loadImage,
+        updateImage,
         canvasRef,
         adjustments,
         updateAdjustment,

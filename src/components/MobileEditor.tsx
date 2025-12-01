@@ -17,7 +17,8 @@ export const MobileEditor: React.FC = () => {
         updateAdjustment,
         activeFilter,
         applyFilter,
-        downloadImage
+        downloadImage,
+        updateImage
     } = useImageEditor();
 
     const navigate = useNavigate();
@@ -202,7 +203,7 @@ export const MobileEditor: React.FC = () => {
                                 {activeTab === 'ai' && (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">Generative AI</h3>
-                                        <AIPanel image={image} userApiKey={apiKey} />
+                                        <AIPanel image={image} userApiKey={apiKey} onApply={updateImage} />
                                     </div>
                                 )}
                                 {activeTab === 'filters' && (
@@ -225,7 +226,7 @@ export const MobileEditor: React.FC = () => {
                         <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
                         {activeTab === 'adjust' && <AdjustmentsPanel adjustments={adjustments} onUpdate={updateAdjustment} />}
                         {activeTab === 'filters' && <FiltersPanel activeFilter={activeFilter} onSelect={applyFilter} />}
-                        {activeTab === 'ai' && <AIPanel image={image} userApiKey={apiKey} />}
+                        {activeTab === 'ai' && <AIPanel image={image} userApiKey={apiKey} onApply={updateImage} />}
                     </div>
                 )}
 
