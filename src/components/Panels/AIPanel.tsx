@@ -16,6 +16,32 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
     const [genFillPrompt, setGenFillPrompt] = useState('');
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+    // Use user provided key or fallback to env var
+    const apiKey = userApiKey || GEMINI_API_KEY;
+
+    // Convert HTMLImageElement to Blob
+    const imageToBlob = async (img: HTMLImageElement): Promise<Blob> => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0);
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve(blob!);
+            }, 'image/png');
+        });
+    };
+
+    const blobToBase64 = (blob: Blob): Promise<string> => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+        });
+    };
+
     // Helper to handle AI success
     const handleAISuccess = (blob: Blob, successMessage: string) => {
         const url = URL.createObjectURL(blob);

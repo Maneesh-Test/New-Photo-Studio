@@ -46,13 +46,14 @@ export const MobileEditor: React.FC = () => {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate('/')}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                        className="flex items-center gap-2 p-2 pr-3 bg-white/5 hover:bg-white/10 rounded-full transition-all text-gray-300 hover:text-white border border-white/5"
                         title="Back to Home"
                     >
-                        <ArrowLeft size={20} />
+                        <ArrowLeft size={18} />
+                        <span className="text-sm font-medium hidden xs:block">Home</span>
                     </button>
                     <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>
-                    <span className="font-medium hidden md:block text-gray-300">Untitled Project</span>
+                    <span className="font-medium text-gray-200">Photo Studio</span>
                 </div>
 
                 <div className="flex items-center gap-3">
