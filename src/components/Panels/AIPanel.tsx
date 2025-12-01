@@ -306,15 +306,6 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }
                     color="text-purple-400"
                     bgColor="bg-purple-400/10"
                 />
-                <AIActionCard
-                    icon={<Wand2 size={20} />}
-                    label="Generative Fill"
-                    description="Add or remove objects with text"
-                    onClick={handleGenerativeFill}
-                    disabled={isProcessing}
-                    color="text-pink-400"
-                    bgColor="bg-pink-400/10"
-                />
             </div>
 
             {isProcessing && (

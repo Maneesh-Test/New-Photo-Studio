@@ -25,6 +25,7 @@ export const MobileEditor: React.FC = () => {
     const [activeTab, setActiveTab] = useState<ActiveTab>(null);
     const [showSettings, setShowSettings] = useState(false);
     const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+    const [zoom, setZoom] = useState(100);
 
     const saveApiKey = () => {
         localStorage.setItem('gemini_api_key', apiKey);
@@ -35,6 +36,18 @@ export const MobileEditor: React.FC = () => {
         if (e.target.files && e.target.files[0]) {
             loadImage(e.target.files[0]);
         }
+    };
+
+    const handleZoomIn = () => {
+        setZoom(prev => Math.min(prev + 25, 200));
+    };
+
+    const handleZoomOut = () => {
+        setZoom(prev => Math.max(prev - 25, 25));
+    };
+
+    const handleResetZoom = () => {
+        setZoom(100);
     };
 
     // Unified layout - no early return for empty state
@@ -100,15 +113,38 @@ export const MobileEditor: React.FC = () => {
                         <>
                             <canvas
                                 ref={canvasRef}
-                                className="max-w-full max-h-full object-contain shadow-2xl ring-1 ring-white/10 rounded-sm"
-                                style={{ maxHeight: 'calc(100vh - 140px)' }}
+                                className="max-w-full max-h-full object-contain shadow-2xl ring-1 ring-white/10 rounded-sm transition-transform duration-200"
+                                style={{
+                                    maxHeight: 'calc(100vh - 140px)',
+                                    transform: `scale(${zoom / 100})`
+                                }}
                             />
 
-                            {/* Floating Zoom Controls (Visual Only for now) */}
+                            {/* Floating Zoom Controls */}
                             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-2 bg-zinc-900/90 backdrop-blur-md border border-white/10 rounded-full shadow-xl text-sm font-medium text-gray-300">
-                                <button className="hover:text-white">-</button>
-                                <span>100%</span>
-                                <button className="hover:text-white">+</button>
+                                <button
+                                    onClick={handleZoomOut}
+                                    disabled={zoom <= 25}
+                                    className="hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    title="Zoom Out"
+                                >
+                                    -
+                                </button>
+                                <button
+                                    onClick={handleResetZoom}
+                                    className="hover:text-white min-w-[50px] text-center transition-colors"
+                                    title="Reset Zoom"
+                                >
+                                    {zoom}%
+                                </button>
+                                <button
+                                    onClick={handleZoomIn}
+                                    disabled={zoom >= 200}
+                                    className="hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    title="Zoom In"
+                                >
+                                    +
+                                </button>
                             </div>
                         </>
                     ) : (
