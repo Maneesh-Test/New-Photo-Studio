@@ -218,10 +218,10 @@ export const MobileEditor: React.FC = () => {
             </div>
 
             {/* Mobile Bottom Bar */}
-            <div className={`md:hidden bg-zinc-900 border-t border-white/5 pb-safe transition-transform duration-300 ${!image ? 'translate-y-full' : ''}`}>
+            <div className={`md:hidden bg-zinc-900 border-t border-white/5 pb-safe transition-transform duration-300 relative z-50 ${!image ? 'translate-y-full' : ''}`}>
                 {/* Active Tool Panel (Mobile) */}
                 {activeTab && (
-                    <div className="p-4 border-b border-white/5 bg-zinc-900/95 backdrop-blur-xl animate-in slide-in-from-bottom-full duration-300 absolute bottom-full left-0 right-0 max-h-[50vh] overflow-y-auto rounded-t-2xl shadow-2xl ring-1 ring-white/10">
+                    <div className="p-4 border-b border-white/5 bg-zinc-900/95 backdrop-blur-xl animate-in slide-in-from-bottom-full duration-300 absolute bottom-full left-0 right-0 max-h-[60vh] overflow-y-auto rounded-t-2xl shadow-2xl ring-1 ring-white/10 z-50">
                         <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
                         {activeTab === 'adjust' && <AdjustmentsPanel adjustments={adjustments} onUpdate={updateAdjustment} />}
                         {activeTab === 'filters' && <FiltersPanel activeFilter={activeFilter} onSelect={applyFilter} />}
