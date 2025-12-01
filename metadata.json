@@ -1,0 +1,5 @@
+{
+  "name": "MCR Studio",
+  "description": "A professional-grade photo editor powered by Gemini 2.5 Flash Image. Features intelligent background removal, image enhancement, and pixel-perfect restoration.",
+  "requestFramePermissions": []
+}
