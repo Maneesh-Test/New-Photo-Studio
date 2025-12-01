@@ -124,10 +124,15 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
     // Remove Background (Transparent PNG)
     const handleRemoveBG = async () => {
         setIsProcessing(true);
-        setStatus('Removing background...');
+        setStatus('Loading AI model...');
 
         try {
-            const { removeBackground } = await import('@imgly/background-removal');
+            setStatus('Initializing background removal...');
+            const { removeBackground } = await import('@imgly/background-removal').catch(err => {
+                throw new Error('Failed to load background removal library. Please refresh the page and try again.');
+            });
+
+            setStatus('Processing image...');
             const blob = await imageToBlob(image);
 
             const pngBlob = await removeBackground(blob, {
@@ -140,7 +145,8 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
             handleAISuccess(pngBlob, 'Background removed!');
         } catch (error) {
             console.error('Background removal error:', error);
-            alert('Failed: ' + (error as Error).message);
+            const errorMessage = (error as Error).message || 'Unknown error occurred';
+            alert(`Background Removal Failed: ${errorMessage}\n\nTry refreshing the page or check your internet connection.`);
             setIsProcessing(false);
         }
     };
@@ -148,10 +154,15 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
     // White Background (JPG)
     const handleWhiteBG = async () => {
         setIsProcessing(true);
-        setStatus('Adding white background...');
+        setStatus('Loading AI model...');
 
         try {
-            const { removeBackground } = await import('@imgly/background-removal');
+            setStatus('Initializing background removal...');
+            const { removeBackground } = await import('@imgly/background-removal').catch(err => {
+                throw new Error('Failed to load background removal library. Please refresh the page and try again.');
+            });
+
+            setStatus('Processing image...');
             const blob = await imageToBlob(image);
 
             // Get transparent PNG first
@@ -162,6 +173,7 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
                 }
             });
 
+            setStatus('Adding white background...');
             // Draw on white canvas
             const img = new Image();
             img.src = URL.createObjectURL(pngBlob);
