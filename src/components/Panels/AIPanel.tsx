@@ -47,7 +47,7 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
         const url = URL.createObjectURL(blob);
         setPreviewUrl(url);
         setStatus('');
-        // Don't alert, just show preview
+        setIsProcessing(false); // Stop processing to show preview
     };
 
     const applyChanges = () => {
@@ -142,8 +142,6 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
             console.error('Background removal error:', error);
             alert('Failed: ' + (error as Error).message);
             setIsProcessing(false);
-        } finally {
-            setIsProcessing(false);
         }
     };
 
@@ -191,8 +189,6 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
         } catch (error) {
             console.error('White BG error:', error);
             alert('Failed: ' + (error as Error).message);
-            setIsProcessing(false);
-        } finally {
             setIsProcessing(false);
         }
     };
