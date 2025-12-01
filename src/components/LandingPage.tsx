@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Sparkles, Wand2, Image as ImageIcon, Zap, Download, Share2, Check, Star, Menu, X, ArrowRight, Github, Twitter, Instagram } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -361,34 +361,6 @@ export const LandingPage: React.FC = () => {
                 </div>
             </section>
 
-    const handleLinkClick = (e: React.MouseEvent, type: string) => {
-        e.preventDefault();
-        switch (type) {
-            case 'about':
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                break;
-            case 'contact':
-                window.location.href = 'mailto:hello@photostudio.dev';
-                break;
-            case 'api':
-                alert('API Access is currently in beta. Please contact sales for early access.');
-                break;
-            case 'blog':
-                alert('Our blog is launching next week! Stay tuned.');
-                break;
-            case 'careers':
-                alert('We are hiring! Send your resume to careers@photostudio.dev');
-                break;
-            case 'showcase':
-                document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' });
-                break;
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-background text-white font-sans selection:bg-accent-500/30">
-            {/* ... (rest of the component) ... */}
-            
             {/* Footer */}
             <footer className="border-t border-white/10 bg-black py-16 px-6">
                 <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
@@ -403,9 +375,9 @@ export const LandingPage: React.FC = () => {
                             The next generation of photo editing. Built for the web, powered by AI, designed for creators.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" onClick={(e) => e.preventDefault()} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><Twitter size={20} /></a>
-                            <a href="#" onClick={(e) => e.preventDefault()} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><Github size={20} /></a>
-                            <a href="#" onClick={(e) => e.preventDefault()} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><Instagram size={20} /></a>
+                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><Twitter size={20} /></a>
+                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><Github size={20} /></a>
+                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><Instagram size={20} /></a>
                         </div>
                     </div>
 
@@ -414,18 +386,18 @@ export const LandingPage: React.FC = () => {
                         <ul className="space-y-4 text-gray-400">
                             <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
                             <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                            <li><a href="#" onClick={(e) => handleLinkClick(e, 'api')} className="hover:text-white transition-colors">API</a></li>
-                            <li><a href="#testimonials" onClick={(e) => handleLinkClick(e, 'showcase')} className="hover:text-white transition-colors">Showcase</a></li>
+                            <li><Link to="/api" className="hover:text-white transition-colors">API</Link></li>
+                            <li><Link to="/showcase" className="hover:text-white transition-colors">Showcase</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-bold mb-6">Company</h4>
                         <ul className="space-y-4 text-gray-400">
-                            <li><a href="#" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-white transition-colors">About</a></li>
-                            <li><a href="#" onClick={(e) => handleLinkClick(e, 'blog')} className="hover:text-white transition-colors">Blog</a></li>
-                            <li><a href="#" onClick={(e) => handleLinkClick(e, 'careers')} className="hover:text-white transition-colors">Careers</a></li>
-                            <li><a href="#" onClick={(e) => handleLinkClick(e, 'contact')} className="hover:text-white transition-colors">Contact</a></li>
+                            <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
+                            <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+                            <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+                            <li><a href="mailto:hello@photostudio.dev" className="hover:text-white transition-colors">Contact</a></li>
                         </ul>
                     </div>
                 </div>
