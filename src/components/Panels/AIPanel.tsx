@@ -7,9 +7,10 @@ type Props = {
     image: HTMLImageElement;
     userApiKey?: string;
     onApply?: (img: HTMLImageElement) => void;
+    onClose?: () => void;
 };
 
-export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
+export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply, onClose }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [status, setStatus] = useState('');
     const [showPromptDialog, setShowPromptDialog] = useState(false);
@@ -48,6 +49,7 @@ export const AIPanel: React.FC<Props> = ({ image, userApiKey, onApply }) => {
         setPreviewUrl(url);
         setStatus('');
         setIsProcessing(false); // Stop processing to show preview
+        onClose?.(); // Close mobile panel to show preview
     };
 
     const applyChanges = () => {
