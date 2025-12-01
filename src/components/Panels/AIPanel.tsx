@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { Sparkles, Eraser, Wand2, Loader2 } from 'lucide-react';
+import { Sparkles, Eraser, Wand2, Loader2, Image as ImageIcon } from 'lucide-react';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 
 type Props = {
     image: HTMLImageElement;
+    userApiKey?: string;
 };
 
-export const AIPanel: React.FC<Props> = ({ image }) => {
+export const AIPanel: React.FC<Props> = ({ image, userApiKey }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [status, setStatus] = useState('');
     const [showPromptDialog, setShowPromptDialog] = useState(false);
     const [genFillPrompt, setGenFillPrompt] = useState('');
+
+    // Use user provided key or fallback to env var
+    const apiKey = userApiKey || GEMINI_API_KEY;
 
     // Convert HTMLImageElement to Blob
     const imageToBlob = async (img: HTMLImageElement): Promise<Blob> => {
@@ -38,8 +42,8 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
 
     // Magic Enhance using Gemini
     const handleMagicEnhance = async () => {
-        if (!GEMINI_API_KEY) {
-            alert('Please set VITE_GEMINI_API_KEY in .env');
+        if (!apiKey) {
+            alert('Please add your Gemini API Key in Settings');
             return;
         }
 
@@ -50,7 +54,7 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
             const blob = await imageToBlob(image);
             const base64 = await blobToBase64(blob);
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -74,28 +78,19 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
         }
     };
 
-    // Remove Background using browser-based library
+    // Remove Background (Transparent PNG)
     const handleRemoveBG = async () => {
         setIsProcessing(true);
         setStatus('Removing background...');
 
         try {
-            // Dynamic import to reduce initial bundle size
             const { removeBackground } = await import('@imgly/background-removal');
-
             const blob = await imageToBlob(image);
 
-            // Remove background and get PNG (for transparency)
             const pngBlob = await removeBackground(blob, {
                 output: { format: 'image/png', quality: 0.8 }
             });
 
-            // Also create JPEG version (transparent areas become white)
-            const jpegBlob = await removeBackground(blob, {
-                output: { format: 'image/jpeg', quality: 0.95 }
-            });
-
-            // Download PNG
             const pngUrl = URL.createObjectURL(pngBlob);
             const pngLink = document.createElement('a');
             pngLink.href = pngUrl;
@@ -103,21 +98,64 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
             pngLink.click();
             URL.revokeObjectURL(pngUrl);
 
-            // Download JPEG
-            setTimeout(() => {
-                const jpegUrl = URL.createObjectURL(jpegBlob);
-                const jpegLink = document.createElement('a');
-                jpegLink.href = jpegUrl;
-                jpegLink.download = 'no-background.jpg';
-                jpegLink.click();
-                URL.revokeObjectURL(jpegUrl);
-            }, 500); // Small delay to prevent browser blocking multiple downloads
-
             setStatus('');
-            alert('Background removed! Check your downloads for both PNG (transparent) and JPG files.');
+            alert('Background removed! Downloaded as transparent PNG.');
         } catch (error) {
             console.error('Background removal error:', error);
-            alert('Background removal failed: ' + (error as Error).message);
+            alert('Failed: ' + (error as Error).message);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    // White Background (JPG)
+    const handleWhiteBG = async () => {
+        setIsProcessing(true);
+        setStatus('Adding white background...');
+
+        try {
+            const { removeBackground } = await import('@imgly/background-removal');
+            const blob = await imageToBlob(image);
+
+            // Get transparent PNG first
+            const pngBlob = await removeBackground(blob, {
+                output: { format: 'image/png', quality: 0.8 }
+            });
+
+            // Draw on white canvas
+            const img = new Image();
+            img.src = URL.createObjectURL(pngBlob);
+            await new Promise((resolve) => (img.onload = resolve));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+
+            if (ctx) {
+                // Fill white
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Draw image
+                ctx.drawImage(img, 0, 0);
+            }
+
+            canvas.toBlob((jpegBlob) => {
+                if (jpegBlob) {
+                    const jpegUrl = URL.createObjectURL(jpegBlob);
+                    const jpegLink = document.createElement('a');
+                    jpegLink.href = jpegUrl;
+                    jpegLink.download = 'white-background.jpg';
+                    jpegLink.click();
+                    URL.revokeObjectURL(jpegUrl);
+                }
+            }, 'image/jpeg', 0.95);
+
+            setStatus('');
+            alert('White background added! Downloaded as JPG.');
+        } catch (error) {
+            console.error('White BG error:', error);
+            alert('Failed: ' + (error as Error).message);
         } finally {
             setIsProcessing(false);
         }
@@ -129,8 +167,8 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
     };
 
     const executeGenerativeFill = async () => {
-        if (!GEMINI_API_KEY) {
-            alert('Please set VITE_GEMINI_API_KEY in .env');
+        if (!apiKey) {
+            alert('Please add your Gemini API Key in Settings');
             return;
         }
 
@@ -147,7 +185,7 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
             const blob = await imageToBlob(image);
             const base64 = await blobToBase64(blob);
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -178,21 +216,28 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
                 <AIButton
                     icon={<Sparkles size={20} />}
                     label="Magic Enhance"
-                    description="Auto-adjust lighting & color"
+                    description="Auto-adjust lighting"
                     onClick={handleMagicEnhance}
                     disabled={isProcessing}
                 />
                 <AIButton
                     icon={<Eraser size={20} />}
                     label="Remove BG"
-                    description="Isolate subject instantly"
+                    description="Transparent PNG"
                     onClick={handleRemoveBG}
+                    disabled={isProcessing}
+                />
+                <AIButton
+                    icon={<ImageIcon size={20} />}
+                    label="White BG"
+                    description="Studio Look JPG"
+                    onClick={handleWhiteBG}
                     disabled={isProcessing}
                 />
                 <AIButton
                     icon={<Wand2 size={20} />}
                     label="Generative Fill"
-                    description="Add or remove objects"
+                    description="Add/Remove objects"
                     onClick={handleGenerativeFill}
                     disabled={isProcessing}
                 />
@@ -205,7 +250,7 @@ export const AIPanel: React.FC<Props> = ({ image }) => {
                 </div>
             )}
 
-            {!GEMINI_API_KEY && (
+            {!apiKey && (
                 <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-400 text-center">
                     Gemini API Key missing. Some AI features disabled.
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useImageEditor, AdjustmentSettings, FilterType, FILTERS } from '../hooks/useImageEditor';
-import { Sliders, Wand2, Image as ImageIcon, Download, Share2, Undo, Redo, X } from 'lucide-react';
+import { Sliders, Wand2, Image as ImageIcon, Download, Share2, Undo, Redo, X, Settings } from 'lucide-react';
 import { AdjustmentsPanel } from './Panels/AdjustmentsPanel';
 import { FiltersPanel } from './Panels/FiltersPanel';
 import { AIPanel } from './Panels/AIPanel';
@@ -20,6 +20,13 @@ export const MobileEditor: React.FC = () => {
     } = useImageEditor();
 
     const [activeTab, setActiveTab] = useState<ActiveTab>(null);
+    const [showSettings, setShowSettings] = useState(false);
+    const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+
+    const saveApiKey = () => {
+        localStorage.setItem('gemini_api_key', apiKey);
+        setShowSettings(false);
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -107,6 +114,12 @@ export const MobileEditor: React.FC = () => {
                 </button>
 
                 <div className="flex gap-2">
+                    <button
+                        onClick={() => setShowSettings(true)}
+                        className="p-2 hover:bg-white/10 rounded-full text-gray-400"
+                    >
+                        <Settings size={20} />
+                    </button>
                     <button className="p-2 hover:bg-white/10 rounded-full text-gray-400">
                         <Undo size={20} />
                     </button>
@@ -143,7 +156,7 @@ export const MobileEditor: React.FC = () => {
                             <FiltersPanel activeFilter={activeFilter} onSelect={applyFilter} />
                         )}
                         {activeTab === 'ai' && (
-                            <AIPanel image={image} />
+                            <AIPanel image={image} userApiKey={apiKey} />
                         )}
                     </div>
                 )}
@@ -170,6 +183,44 @@ export const MobileEditor: React.FC = () => {
                     />
                 </div>
             </div>
+
+            {/* Settings Modal */}
+            {showSettings && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full">
+                        <h3 className="text-lg font-semibold mb-4">Settings</h3>
+
+                        <div className="mb-6">
+                            <label className="block text-sm text-gray-400 mb-2">Gemini API Key</label>
+                            <input
+                                type="password"
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                                placeholder="AIza..."
+                                className="w-full bg-surfaceHighlight border border-border rounded-lg p-3 text-white text-sm focus:border-accent-500 outline-none transition-colors"
+                            />
+                            <p className="text-xs text-gray-500 mt-2">
+                                Required for AI features. Get one at <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-accent-500 hover:underline">Google AI Studio</a>.
+                            </p>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowSettings(false)}
+                                className="flex-1 px-4 py-2 bg-surfaceHighlight border border-border rounded-lg hover:bg-surface transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={saveApiKey}
+                                className="flex-1 px-4 py-2 bg-accent-600 hover:bg-accent-500 rounded-lg transition-colors font-medium"
+                            >
+                                Save Key
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
